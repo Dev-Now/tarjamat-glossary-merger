@@ -15,6 +15,8 @@ static std::vector<std::string> const HAMZAS{ u8"\u0621", u8"\u0622", u8"\u0623"
 
 static std::string const AL = u8"\u0627\u0644";
 
+static std::vector<std::string> const SPACES{ " ", "\f", "\n", "\r", "\t", "\v" };
+
 inline static std::string& REMOVE_VOCALS(std::string& szStr)
 {
     for (auto const& voc : VOCALS) {
@@ -53,6 +55,11 @@ inline static std::string& UNIFORMIZE_HMZAS(std::string& szStr)
 inline static std::string& REMOVE_LEADING_AL(std::string& szStr)
 {
     if (szStr.substr(0u, 4u) == AL) { szStr.erase(0u, 4u); }
+    auto pos = szStr.find(u8" ");
+    while ( (pos!= std::string::npos) && ((pos + 4u) < szStr.length()) ) {
+        if (szStr.substr(pos+1u, 4u) == AL) { szStr.erase(pos+1u, 4u); }
+        pos = szStr.find(u8" ", pos + 1u);
+    }
     return szStr;
 }
 

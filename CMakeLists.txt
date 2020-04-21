@@ -19,5 +19,11 @@ target_sources( mrgls PUBLIC
                 )
 
 target_sources( mrgls PRIVATE
-                utils/utils.h       
+                glossary_master.h
+                glossary_master.cpp
+                
+                utils/utils.h
+                
+                glossary-csv-parser/glossary_csv_parser.h
+                glossary-csv-parser/glossary_csv_parser.cpp
                 )
