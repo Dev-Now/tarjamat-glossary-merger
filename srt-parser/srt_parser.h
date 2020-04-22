@@ -22,7 +22,7 @@ class CSrtParser
 {
     std::vector<TSubtitle> m_vAllSubtitles;
 
-    TSubtitle NextSubtitle(fs::path const& pFile, std::ifstream& ifs);
+    TSubtitle NextSubtitle(fs::path const& pFile, std::ifstream& ifs, unsigned& nLine);
 public:
     explicit CSrtParser(fs::path pSrtLocation);
     std::vector<TSubtitle> GetAllSubtitles() const { return m_vAllSubtitles; }

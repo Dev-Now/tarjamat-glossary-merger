@@ -40,24 +40,27 @@ std::string TSubtitle::ExtractOriginal(size_t nPosInCmp, size_t nWordCount, std:
     return szExtracted.substr(nStartPos, nEndPos - nStartPos + 1u);
 }
 
-TSubtitle CSrtParser::NextSubtitle(fs::path const& pFile, std::ifstream& ifs)
+TSubtitle CSrtParser::NextSubtitle(fs::path const& pFile, std::ifstream& ifs, unsigned& nLine)
 {
     std::string szLine;
     try {
         // extract the subtitle index
-        std::getline(ifs, szLine);
+        std::getline(ifs, szLine); ++nLine;
         std::istringstream iss(szLine);
         unsigned nNdx; iss >> nNdx;
         // ignore timing line
-        std::getline(ifs, szLine);
+        std::getline(ifs, szLine); ++nLine;
         // read all subtitle text
         std::string szRawSub = "";
         do {
-            std::getline(ifs, szLine);
+            std::getline(ifs, szLine); ++nLine;
             szRawSub += szLine + "\n";
         } while (szLine != "");
+        if (szRawSub.empty()) throw std::logic_error("Empty subtitle!");
         szRawSub.pop_back();
+        if (szRawSub.empty()) throw std::logic_error("Empty subtitle!");
         szRawSub.pop_back();
+        if (szRawSub.empty()) throw std::logic_error("Empty subtitle!");
         // make comparison subtitle text
         std::string szCmpText(szRawSub);
         REMOVE_VOCALS(szCmpText);
@@ -66,8 +69,8 @@ TSubtitle CSrtParser::NextSubtitle(fs::path const& pFile, std::ifstream& ifs)
         return { pFile, nNdx, szRawSub, szCmpText };
     } 
     catch (std::exception const& e) {
-        g_logger << "srt file " << pFile << " parsing failed around :\n";
-        g_logger << szLine << "\n";
+        g_logger << "srt file " << pFile << " parsing failed around line:\n";
+        g_logger << nLine << ": " << szLine << "\n";
         g_logger << e.what() << "\n";
         throw e;
     }
@@ -82,8 +85,9 @@ CSrtParser::CSrtParser(fs::path pSrtLocation)
             auto pExt = p.path().extension();
             if (pExt == ".srt" || pExt == ".SRT") {
                 std::ifstream ifs(p.path().string().c_str());
+                unsigned nLine = 0u;
                 while (!ifs.eof()) {
-                    m_vAllSubtitles.push_back(NextSubtitle(p.path(), ifs));
+                    m_vAllSubtitles.push_back(NextSubtitle(p.path(), ifs, nLine));
                 }
             }
         }
@@ -91,8 +95,9 @@ CSrtParser::CSrtParser(fs::path pSrtLocation)
     else if ((pSrtLocation.extension() == ".srt") || (pSrtLocation.extension() == ".SRT")) {
         g_logger << "Parsing srt file. . .\n";
         std::ifstream ifs(pSrtLocation.string().c_str());
+        unsigned nLine = 0u;
         while (!ifs.eof()) {
-            m_vAllSubtitles.push_back(NextSubtitle(pSrtLocation, ifs));
+            m_vAllSubtitles.push_back(NextSubtitle(pSrtLocation, ifs, nLine));
         }
     }
     g_logger << "srt parsed!\n";
