@@ -15,7 +15,7 @@ struct TSubtitle
     std::string m_szText;
     std::string m_szCmpText;
 
-    std::string ExtractOriginal(size_t nPosInCmp, size_t nWordCount) const;
+    std::string ExtractOriginal(size_t nPosInCmp, size_t nWordCount, std::string const& szCmpWord, bool bNoAl) const;
 };
 
 class CSrtParser

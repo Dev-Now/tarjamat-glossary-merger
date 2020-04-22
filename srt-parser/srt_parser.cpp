@@ -5,13 +5,39 @@
 
 extern std::ofstream g_logger;
 
-std::string TSubtitle::ExtractOriginal(size_t nPosInCmp, size_t nWordCount) const
+std::string TSubtitle::ExtractOriginal(size_t nPosInCmp, size_t nWordCount, std::string const& szCmpWord, bool bNoAl) const
 {
     // deduce from nPosInCmp the word position
-    // extact [nWordCount] words from m_szText starting with the word at deduced position
     size_t nWordPos = WORD_POS(m_szCmpText, nPosInCmp);
+    // extact [nWordCount] words from m_szText starting with the word at deduced position
     std::string szExtracted(m_szText);
-    return EXTRACT_WORDS(szExtracted, nWordPos, nWordCount);
+    EXTRACT_WORDS(szExtracted, nWordPos, nWordCount);
+    // cleanup the extracted word from extra letters
+    //g_logger << "Cmp: " << szCmpWord << "\n";
+    //g_logger << "Raw: " << szExtracted << "\n";
+    std::vector<char> vExtractedSignature = GEN_SIGNATURE(szExtracted);
+    //g_logger << "Signature: "; for (auto c : vExtractedSignature) { g_logger << (int)c; } g_logger << "\n";
+    std::string szUnifExtracted(szExtracted);
+    UNIFORMIZE(szUnifExtracted);
+    if (bNoAl) REMOVE_LEADING_AL(szUnifExtracted);
+    //g_logger << "Unif: " << szUnifExtracted << "\n";
+    auto preChars = szUnifExtracted.find(szCmpWord);
+    auto postChars = szUnifExtracted.length() - szCmpWord.length() - preChars;
+    //g_logger << "Pre: " << preChars << ", Post: " << postChars << "\n";
+    size_t nStartPos = 0u, nEndPos = szExtracted.length()-1u;
+    while (preChars > 0u) {
+        if (vExtractedSignature[nStartPos] == 1) { --preChars; }
+        ++nStartPos;
+    }
+    while (vExtractedSignature[nStartPos] != 1) { ++nStartPos; }
+    while (postChars > 0u) {
+        if (vExtractedSignature[nEndPos] == 1) { --postChars; }
+        --nEndPos;
+    }
+    while (vExtractedSignature[nEndPos] != 1) { --nEndPos; }
+    //g_logger << "start: " << nStartPos << ", end: " << nEndPos << "\n";
+    //g_logger << "Clean: " << szExtracted.substr(nStartPos, nEndPos - nStartPos + 1u) << "\n";
+    return szExtracted.substr(nStartPos, nEndPos - nStartPos + 1u);
 }
 
 TSubtitle CSrtParser::NextSubtitle(fs::path const& pFile, std::ifstream& ifs)

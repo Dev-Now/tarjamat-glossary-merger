@@ -29,6 +29,20 @@ inline static std::string& REMOVE_VOCALS(std::string& szStr)
     return szStr;
 }
 
+inline static std::vector<char> GEN_SIGNATURE(std::string const& szStr)
+{
+    std::vector<char> vSignature(szStr.length(), 1);
+    for (auto const& voc : VOCALS) {
+        auto pos = szStr.find(voc);
+        while (pos != std::string::npos) {
+            vSignature[pos] = 0;
+            vSignature[++pos] = 0;
+            pos = szStr.find(voc, ++pos);
+        }
+    }
+    return vSignature;
+}
+
 inline static std::string& UNIFORMIZE_TAAS(std::string& szStr)
 {
     auto pos = szStr.find(CLSD_TAA);

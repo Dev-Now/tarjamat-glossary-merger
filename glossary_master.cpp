@@ -15,12 +15,12 @@ void CGlossaryMaster::Merge(std::vector<std::string> const& vGlossEntries)
     }
 }
 
-void CGlossaryMaster::FindVariaties(std::vector<std::string>& vVariaties, std::string const& szCmpWord, std::vector<TSubtitle> vAllSubtitles)
+void CGlossaryMaster::FindVariaties(std::vector<std::string>& vVariaties, std::string const& szCmpWord, std::vector<TSubtitle> vAllSubtitles, bool bNoAl = false)
 {
     for (auto const& subt : vAllSubtitles) {
         auto pos = subt.m_szCmpText.find(szCmpWord);
         while (pos != std::string::npos) {
-            vVariaties.push_back( subt.ExtractOriginal(pos, WORD_COUNT(szCmpWord)) );
+            vVariaties.push_back( subt.ExtractOriginal(pos, WORD_COUNT(szCmpWord), szCmpWord, bNoAl) );
             pos = subt.m_szCmpText.find(szCmpWord, pos + szCmpWord.length());
         }
     }
@@ -50,7 +50,7 @@ void CGlossaryMaster::LookupVariaties(std::vector<TSubtitle>&& vAllSubtitles)
         UNIFORMIZE(szCmp);
         szCmpNoAl = szCmp;
         REMOVE_LEADING_AL(szCmpNoAl);
-        std::future<void> fNoAl = std::async(&CGlossaryMaster::FindVariaties, this, vFoundVariatiesNoAl, szCmpNoAl, vAllSubtitles);
+        std::future<void> fNoAl = std::async(&CGlossaryMaster::FindVariaties, this, vFoundVariatiesNoAl, szCmpNoAl, vAllSubtitles, true);
         FindVariaties(vFoundVariaties, szCmp, vAllSubtitles);
         fNoAl.get();
     }
