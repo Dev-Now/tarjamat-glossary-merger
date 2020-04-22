@@ -105,17 +105,17 @@ inline static size_t WORD_COUNT(std::string const& szStr)
     std::string sz(szStr); // make a copy of the string to use it
     TRIM(sz, SPACES);
     size_t nCount = 0u;
-    size_t nspos;
-    while (ANY_OF(SPACES.begin(), SPACES.end(), [&sz, &nspos](std::string const& space) {
-        nspos = sz.find(space);
-        return (nspos != std::string::npos);
-        })) {
+    while (!sz.empty()) {
+        size_t nspos = 0u;
+        for (;;) {
+            if (nspos > sz.length()) break;
+            if (std::find(SPACES.begin(), SPACES.end(), sz.substr(nspos, 1u)) != SPACES.end()) break;
+            ++nspos;
+        }
         ++nCount;
         sz.erase(0u, nspos);
         TRIM(sz, SPACES);
     }
-    TRIM(sz, SPACES);
-    if (sz.length() > 0u) ++nCount;
     return nCount;
 }
 
@@ -136,17 +136,14 @@ inline static std::string& EXTRACT_WORDS(std::string& szStr, size_t nWordPos, si
     TRIM(szStr, SPACES);
     while (!szStr.empty() && (nWordPos > 0u)) {
         size_t nspos = 0u;
-        if (ANY_OF(SPACES.begin(), SPACES.end(), [&szStr, &nspos](std::string const& space) {
-            nspos = szStr.find(space);
-            return nspos != std::string::npos;
-            })) {
-            --nWordPos;
-            szStr.erase(0u, nspos);
-            TRIM(szStr, SPACES);
+        for (;;) {
+            if (nspos > szStr.length()) break;
+            if (std::find(SPACES.begin(), SPACES.end(), szStr.substr(nspos, 1u)) != SPACES.end()) break;
+            ++nspos;
         }
-        else {
-            szStr.clear();
-        }
+        --nWordPos;
+        szStr.erase(0u, nspos);
+        TRIM(szStr, SPACES);
     }
     TRIM(szStr, SPACES);
     if (szStr.empty()) return szStr;
