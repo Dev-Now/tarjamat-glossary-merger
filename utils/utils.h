@@ -71,6 +71,7 @@ constexpr bool ANY_OF(InputIt first, InputIt last, UnaryPredicate p)
 
 inline static std::string& TRIM(std::string& szStr, std::vector<std::string> const& vExtraChars)
 {
+    if (szStr.length() == 0u) return szStr;
     size_t nxL;
     while (ANY_OF(vExtraChars.begin(), vExtraChars.end(), [&szStr, &nxL](std::string const& extra) {
         auto pos = szStr.find(extra);
@@ -79,6 +80,7 @@ inline static std::string& TRIM(std::string& szStr, std::vector<std::string> con
         }) ) {
         szStr.erase(0u, nxL);
     }
+    if (szStr.length() == 0u) return szStr;
     while (ANY_OF(vExtraChars.begin(), vExtraChars.end(), [&szStr, &nxL](std::string const& extra) {
         auto pos = szStr.rfind(extra);
         nxL = ( pos == (szStr.length()-extra.length()) ) ? extra.length() : 0u;
@@ -86,6 +88,69 @@ inline static std::string& TRIM(std::string& szStr, std::vector<std::string> con
         })) {
         szStr.erase(szStr.length() - nxL, nxL);
     }
+    return szStr;
+}
+
+inline static std::string& UNIFORMIZE(std::string& szStr)
+{
+    TRIM(szStr, SPACES);
+    REMOVE_VOCALS(szStr);
+    UNIFORMIZE_TAAS(szStr);
+    UNIFORMIZE_HMZAS(szStr);
+    return szStr;
+}
+
+inline static size_t WORD_COUNT(std::string const& szStr)
+{
+    std::string sz(szStr); // make a copy of the string to use it
+    TRIM(sz, SPACES);
+    size_t nCount = 0u;
+    size_t nspos;
+    while (ANY_OF(SPACES.begin(), SPACES.end(), [&sz, &nspos](std::string const& space) {
+        nspos = sz.find(space);
+        return (nspos != std::string::npos);
+        })) {
+        ++nCount;
+        sz.erase(0u, nspos);
+        TRIM(sz, SPACES);
+    }
+    TRIM(sz, SPACES);
+    if (sz.length() > 0u) ++nCount;
+    return nCount;
+}
+
+inline static size_t WORD_POS(std::string const& szStr, size_t nCharPos)
+{
+    std::string sz(szStr); // make a copy of the string to use it
+    for (;;) {
+        if (nCharPos == 0u) break;
+        if (std::find(SPACES.begin(), SPACES.end(), szStr.substr(nCharPos, 1u)) != SPACES.end()) break;
+        --nCharPos;
+    }
+    sz.erase(nCharPos, std::string::npos);
+    return WORD_COUNT(sz);
+}
+
+inline static std::string& EXTRACT_WORDS(std::string& szStr, size_t nWordPos, size_t nWordCount = 1u)
+{
+    TRIM(szStr, SPACES);
+    while (!szStr.empty() && (nWordPos > 0u)) {
+        size_t nspos = 0u;
+        if (ANY_OF(SPACES.begin(), SPACES.end(), [&szStr, &nspos](std::string const& space) {
+            nspos = szStr.find(space);
+            return nspos != std::string::npos;
+            })) {
+            --nWordPos;
+            szStr.erase(0u, nspos);
+            TRIM(szStr, SPACES);
+        }
+        else {
+            szStr.clear();
+        }
+    }
+    TRIM(szStr, SPACES);
+    if (szStr.empty()) return szStr;
+    while (WORD_COUNT(szStr) > nWordCount) { szStr.pop_back(); TRIM(szStr, SPACES); }
     return szStr;
 }
 

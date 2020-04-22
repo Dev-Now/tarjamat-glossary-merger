@@ -3,21 +3,28 @@
 #include "srt-parser/srt_parser.h"
 
 #include <fstream>
+#include <future>
 
 int main()
 {
-    std::ofstream ofs("test1.txt");
+    /*std::ofstream ofst("test-wc.txt");  
+    std::string sz(u8"للمهندسِ عبدِ اللهِ العُجَيْرِيِّ حفظَهُ اللهُ");
+    ofst << "Extracted: " << EXTRACT_WORDS(sz, 1u, 3u);
+    return 0;*/
 
-    std::vector<TSubtitle> v = CSrtParser(".").GetAllSubtitles();
-    for (auto& item : v) {
-        ofs << item.m_pSrtFile << ": " << item.m_nSubNdx << "=\n";
-        ofs << item.m_szText << "\n";
-        ofs << item.m_szCmpText << "\n";
+    std::packaged_task<std::vector<TSubtitle>()> taskParseSrts([] {
+        return CSrtParser(".").GetAllSubtitles();
+        });
+    std::future<std::vector<TSubtitle>> fParseSrts = taskParseSrts.get_future();
+    taskParseSrts();
+
+    std::ofstream ofs("unified-glossary.csv");
+    ofs << "ar-SA,,,\n"; // header
+    CGlossaryMaster glsm;
+    glsm.LookupVariaties(fParseSrts.get());
+    std::set<std::string, GlossRecCmp> s = glsm.GetGlossary();
+    for (auto& item : s) {
+        ofs << item << ",,,\n";
     }
-    /*CGlossaryMaster glsm;
-    std::vector<std::string> v = glsm.GetGlossary();
-    for (auto& item : v) {
-        ofs << item << "\n";
-    }*/
     return 0;
 }

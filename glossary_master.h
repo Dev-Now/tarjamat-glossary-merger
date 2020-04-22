@@ -1,4 +1,5 @@
 #include "utils/utils.h"
+#include "srt-parser/srt_parser.h"
 
 #include <vector>
 #include <string>
@@ -28,17 +29,12 @@ class CGlossaryMaster
     std::set<std::string, GlossRecCmp> m_sMasterGlossary;
 
     void Merge(std::vector<std::string> const&);
+    void FindVariaties(std::vector<std::string>& vVariaties, std::string const& szCmpWord, std::vector<TSubtitle> vAllSubtitles);
 public:
     CGlossaryMaster();
 
-    // todo: remove this... just for testing
-    std::vector<std::string> GetGlossary() const {
-        std::vector<std::string> v;
-        for (auto& item : m_sMasterGlossary) {
-            v.push_back(item);
-        }
-        return v;
-    }
+    void LookupVariaties(std::vector<TSubtitle>&& vAllSubtitles);
+    std::set<std::string, GlossRecCmp> GetGlossary() const { return m_sMasterGlossary; }
 };
 
 #endif // !_GLOSS_MASTER

@@ -3,6 +3,15 @@
 
 #include <sstream>
 
+std::string TSubtitle::ExtractOriginal(size_t nPosInCmp, size_t nWordCount) const
+{
+    // deduce from nPosInCmp the word position
+    // extact [nWordCount] words from m_szText starting with the word at deduced position
+    size_t nWordPos = WORD_POS(m_szCmpText, nPosInCmp);
+    std::string szExtracted(m_szText);
+    return EXTRACT_WORDS(szExtracted, nWordPos, nWordCount);
+}
+
 TSubtitle CSrtParser::NextSubtitle(fs::path const& pFile, std::ifstream& ifs)
 {
     std::string szLine;

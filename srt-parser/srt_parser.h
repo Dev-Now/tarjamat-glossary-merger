@@ -14,6 +14,8 @@ struct TSubtitle
     unsigned    m_nSubNdx = 0u;
     std::string m_szText;
     std::string m_szCmpText;
+
+    std::string ExtractOriginal(size_t nPosInCmp, size_t nWordCount) const;
 };
 
 class CSrtParser
