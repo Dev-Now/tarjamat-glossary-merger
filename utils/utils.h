@@ -64,7 +64,7 @@ inline static std::string& REMOVE_LEADING_AL(std::string& szStr)
 }
 
 template< class InputIt, class UnaryPredicate >
-constexpr bool any_of(InputIt first, InputIt last, UnaryPredicate p)
+constexpr bool ANY_OF(InputIt first, InputIt last, UnaryPredicate p)
 {
     return std::find_if(first, last, p) != last;
 }
@@ -72,14 +72,14 @@ constexpr bool any_of(InputIt first, InputIt last, UnaryPredicate p)
 inline static std::string& TRIM(std::string& szStr, std::vector<std::string> const& vExtraChars)
 {
     size_t nxL;
-    while (any_of(vExtraChars.begin(), vExtraChars.end(), [&szStr, &nxL](std::string const& extra) {
+    while (ANY_OF(vExtraChars.begin(), vExtraChars.end(), [&szStr, &nxL](std::string const& extra) {
         auto pos = szStr.find(extra);
         nxL = (pos == 0u) ? extra.length() : 0u;
         return (pos == 0u);
         }) ) {
         szStr.erase(0u, nxL);
     }
-    while (any_of(vExtraChars.begin(), vExtraChars.end(), [&szStr, &nxL](std::string const& extra) {
+    while (ANY_OF(vExtraChars.begin(), vExtraChars.end(), [&szStr, &nxL](std::string const& extra) {
         auto pos = szStr.rfind(extra);
         nxL = ( pos == (szStr.length()-extra.length()) ) ? extra.length() : 0u;
         return ( pos == (szStr.length() - extra.length()) );

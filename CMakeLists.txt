@@ -26,4 +26,7 @@ target_sources( mrgls PRIVATE
                 
                 glossary-csv-parser/glossary_csv_parser.h
                 glossary-csv-parser/glossary_csv_parser.cpp
+
+                srt-parser/srt_parser.h
+                srt-parser/srt_parser.cpp
                 )
