@@ -17,6 +17,7 @@ int main()
     taskParseSrts();
 
     std::ofstream ofs("unified-glossary.csv");
+    ofs << (char)0xEF << (char)0xBB << (char)0xBF;
     ofs << "ar-SA,,,\n"; // header
     CGlossaryMaster glsm;
     glsm.LookupVariaties(fParseSrts.get());
