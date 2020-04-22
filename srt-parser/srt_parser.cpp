@@ -22,6 +22,7 @@ std::string TSubtitle::ExtractOriginal(size_t nPosInCmp, size_t nWordCount, std:
     if (bNoAl) REMOVE_LEADING_AL(szUnifExtracted);
     //g_logger << "Unif: " << szUnifExtracted << "\n";
     auto preChars = szUnifExtracted.find(szCmpWord);
+    if (preChars == std::string::npos) return "";
     auto postChars = szUnifExtracted.length() - szCmpWord.length() - preChars;
     //g_logger << "Pre: " << preChars << ", Post: " << postChars << "\n";
     size_t nStartPos = 0u, nEndPos = szExtracted.length()-1u;
