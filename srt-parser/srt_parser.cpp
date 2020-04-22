@@ -3,6 +3,8 @@
 
 #include <sstream>
 
+extern std::ofstream g_logger;
+
 std::string TSubtitle::ExtractOriginal(size_t nPosInCmp, size_t nWordCount) const
 {
     // deduce from nPosInCmp the word position
@@ -38,10 +40,9 @@ TSubtitle CSrtParser::NextSubtitle(fs::path const& pFile, std::ifstream& ifs)
         return { pFile, nNdx, szRawSub, szCmpText };
     } 
     catch (std::exception const& e) {
-        std::ofstream ofs("log.txt");
-        ofs << "srt file " << pFile << " parsing failed around :\n";
-        ofs << szLine << "\n";
-        ofs << e.what() << "\n";
+        g_logger << "srt file " << pFile << " parsing failed around :\n";
+        g_logger << szLine << "\n";
+        g_logger << e.what() << "\n";
         throw e;
     }
 }
@@ -50,6 +51,7 @@ CSrtParser::CSrtParser(fs::path pSrtLocation)
 {
     if (!fs::exists(pSrtLocation)) return;
     if (fs::is_directory(pSrtLocation)) { // when the location is a directory, parse all .srt files inside...
+        g_logger << "Parsing srt files. . .\n";
         for (auto& p : fs::directory_iterator(pSrtLocation)) {
             auto pExt = p.path().extension();
             if (pExt == ".srt" || pExt == ".SRT") {
@@ -61,10 +63,12 @@ CSrtParser::CSrtParser(fs::path pSrtLocation)
         }
     }
     else if ((pSrtLocation.extension() == ".srt") || (pSrtLocation.extension() == ".SRT")) {
+        g_logger << "Parsing srt file. . .\n";
         std::ifstream ifs(pSrtLocation.string().c_str());
         while (!ifs.eof()) {
             m_vAllSubtitles.push_back(NextSubtitle(pSrtLocation, ifs));
         }
     }
+    g_logger << "srt parsed!\n";
 }
 

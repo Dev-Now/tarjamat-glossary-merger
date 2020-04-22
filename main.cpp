@@ -1,17 +1,15 @@
 ﻿#include "utils/utils.h"
 #include "glossary_master.h"
 #include "srt-parser/srt_parser.h"
+#include "utils/logs.h"
 
-#include <fstream>
 #include <future>
+#include <iostream>
 
 int main()
 {
-    /*std::ofstream ofst("test-wc.txt");  
-    std::string sz(u8"للمهندسِ عبدِ اللهِ العُجَيْرِيِّ حفظَهُ اللهُ");
-    ofst << "Extracted: " << EXTRACT_WORDS(sz, 1u, 3u);
-    return 0;*/
-
+    std::cout << "mrgls is working hard.\nPlease wait. . .\n";
+    g_logger << "mrgls started. . .\n";
     std::packaged_task<std::vector<TSubtitle>()> taskParseSrts([] {
         return CSrtParser(".").GetAllSubtitles();
         });

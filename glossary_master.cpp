@@ -4,6 +4,8 @@
 #include <filesystem>
 #include <future>
 
+extern std::ofstream g_logger;
+
 namespace fs = std::filesystem;
 
 void CGlossaryMaster::Merge(std::vector<std::string> const& vGlossEntries)
@@ -29,16 +31,19 @@ CGlossaryMaster::CGlossaryMaster()
     // first, find all csv files
     // next, parse them one by one
     // then, merge found glossary enteries into the master set
+    g_logger << "Merging all glossary csv files. . .\n";
     for (auto& p : fs::directory_iterator(".")) {
         auto pExt = p.path().extension();
         if (pExt == ".csv" || pExt == ".CSV") {
             Merge(CGlossaryCsvParser(p.path()).GetGlossaryEntries());
         }
     }
+    g_logger << "Merge complete!\n";
 }
 
 void CGlossaryMaster::LookupVariaties(std::vector<TSubtitle>&& vAllSubtitles)
 {
+    g_logger << "Lookup glossary words variaties. . .\n";
     std::vector<std::string> vFoundVariaties, vFoundVariatiesNoAl;
     for (auto const& glsRec : m_sMasterGlossary) {
         std::string szCmp = glsRec, szCmpNoAl;
@@ -51,4 +56,5 @@ void CGlossaryMaster::LookupVariaties(std::vector<TSubtitle>&& vAllSubtitles)
     }
     Merge(vFoundVariaties);
     Merge(vFoundVariatiesNoAl);
+    g_logger << "Lookup complete!\n";
 }
