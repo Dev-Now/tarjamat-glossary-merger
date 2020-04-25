@@ -50,7 +50,7 @@ void CGlossaryMaster::LookupVariaties(std::vector<TSubtitle>&& vAllSubtitles)
         UNIFORMIZE(szCmp);
         szCmpNoAl = szCmp;
         REMOVE_LEADING_AL(szCmpNoAl);
-        std::future<void> fNoAl = std::async(&CGlossaryMaster::FindVariaties, this, vFoundVariatiesNoAl, szCmpNoAl, vAllSubtitles, true);
+        std::future<void> fNoAl = std::async(&CGlossaryMaster::FindVariaties, this, std::ref(vFoundVariatiesNoAl), szCmpNoAl, vAllSubtitles, true);
         FindVariaties(vFoundVariaties, szCmp, vAllSubtitles);
         fNoAl.get();
     }

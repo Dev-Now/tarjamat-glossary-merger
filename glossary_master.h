@@ -11,10 +11,7 @@
 struct GlossRecCmp {
     bool operator()(const std::string& lhs, const std::string& rhs) const {
         std::string lhsc(lhs), rhsc(rhs);
-        TRIM(lhsc, SPACES); TRIM(rhsc, SPACES);
-        REMOVE_VOCALS(lhsc); REMOVE_VOCALS(rhsc);
-        UNIFORMIZE_TAAS(lhsc); UNIFORMIZE_TAAS(rhsc);
-        UNIFORMIZE_HMZAS(lhsc); UNIFORMIZE_HMZAS(rhsc);
+        UNIFORMIZE(lhsc); UNIFORMIZE(rhsc);
         REMOVE_LEADING_AL(lhsc); REMOVE_LEADING_AL(rhsc);
         size_t lhsScore = (std::hash<std::string>()(lhsc) << 8) | 
             ( std::hash<std::string>()(lhs) >> (sizeof(size_t)*8 - 8) );
