@@ -9,7 +9,7 @@
 int main()
 {
     std::cout << "mrgls is working hard.\nPlease wait. . .\n";
-    g_logger << "mrgls started. . .\n";
+    LOG("mrgls started. . .\n");
     std::packaged_task<std::vector<TSubtitle>()> taskParseSrts([] {
         return CSrtParser(".").GetAllSubtitles();
         });

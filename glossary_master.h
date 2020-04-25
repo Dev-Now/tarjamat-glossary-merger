@@ -26,7 +26,7 @@ class CGlossaryMaster
     std::set<std::string, GlossRecCmp> m_sMasterGlossary;
 
     void Merge(std::vector<std::string> const&);
-    void FindVariaties(std::vector<std::string>& vVariaties, std::string const& szCmpWord, std::vector<TSubtitle> vAllSubtitles, bool bNoAl);
+    void FindVariaties(std::vector<std::string>& vVariaties, std::string const& szCmpWord, std::vector<TSubtitle> const& vAllSubtitles);
 public:
     CGlossaryMaster();
 
