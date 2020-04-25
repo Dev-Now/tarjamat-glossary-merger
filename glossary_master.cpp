@@ -11,7 +11,7 @@ namespace fs = std::filesystem;
 void CGlossaryMaster::Merge(std::vector<std::string> const& vGlossEntries)
 {
     for (auto const& szEntry : vGlossEntries) {
-        m_sMasterGlossary.insert(szEntry);
+        if(szEntry!="") m_sMasterGlossary.insert(szEntry);
     }
 }
 
