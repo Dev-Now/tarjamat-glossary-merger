@@ -14,10 +14,10 @@ struct GlossRecCmp {
         std::string lhsc(lhs.szTerm), rhsc(rhs.szTerm);
         UNIFORMIZE(lhsc); UNIFORMIZE(rhsc);
         REMOVE_LEADING_AL(lhsc); REMOVE_LEADING_AL(rhsc);
-        size_t lhsScore = (std::hash<std::string>()(lhsc) << 8) | 
-            ( std::hash<std::string>()(lhs.szTerm) >> (sizeof(size_t)*8 - 8) );
-        size_t rhsScore = (std::hash<std::string>()(rhsc) << 8) |
-            ( std::hash<std::string>()(rhs.szTerm) >> (sizeof(size_t) * 8 - 8) );
+        size_t lhsScore = (std::hash<std::string>()(lhsc) << 16) | 
+            ( std::hash<std::string>()(lhs.szTerm) >> (sizeof(size_t)*8 - 16) );
+        size_t rhsScore = (std::hash<std::string>()(rhsc) << 16) |
+            ( std::hash<std::string>()(rhs.szTerm) >> (sizeof(size_t) * 8 - 16) );
         return lhsScore < rhsScore;
     }
 };
@@ -28,7 +28,7 @@ class CGlossaryMaster
 
     void Merge(std::vector<TGlossEntry> const&);
     void FindVariaties(std::vector<TGlossEntry>& vVariaties, std::string const& szCmpWord, std::vector<TSubtitle> const& vAllSubtitles,
-        std::string const& szFile, std::string const& szTranslation);
+        std::string const& szFile, std::string const& szTranslation, std::string const& szComment);
 public:
     CGlossaryMaster(std::string const& spr = DFLT_SEPR);
 

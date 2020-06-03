@@ -12,8 +12,9 @@ static std::string const DFLT_SEPR = ",";
 
 struct TGlossEntry {
     std::string szTerm;
-    std::string szFile;
     std::string szTranslation;
+    std::string szComment;
+    std::string szFile;
 };
 
 class CGlossaryCsvParser

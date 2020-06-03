@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
     glsm.LookupVariaties(fParseSrts.get());
     std::set<TGlossEntry, GlossRecCmp> s = glsm.GetGlossary();
     for (auto& item : s) {
-        ofs << item.szTerm << spr << item.szTranslation << spr << spr << item.szFile << spr << "\n";
+        ofs << item.szTerm << spr << item.szTranslation << spr << item.szComment << spr << item.szFile << spr << "\n";
     }
     return 0;
 }

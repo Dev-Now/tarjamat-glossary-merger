@@ -9,17 +9,25 @@ namespace fs = std::filesystem;
 void CGlossaryMaster::Merge(std::vector<TGlossEntry> const& vGlossEntries)
 {
     for (auto const& szEntry : vGlossEntries) {
-        if(szEntry.szTerm!="") m_sMasterGlossary.insert(szEntry);
+        if (szEntry.szTerm != "") {
+            if (m_sMasterGlossary.find(szEntry)==m_sMasterGlossary.end())
+                m_sMasterGlossary.insert(szEntry);
+            else if (szEntry.szTranslation != "")
+            {
+                m_sMasterGlossary.erase(szEntry);
+                m_sMasterGlossary.insert(szEntry);
+            }
+        }
     }
 }
 
 void CGlossaryMaster::FindVariaties(std::vector<TGlossEntry>& vVariaties, std::string const& szCmpWord, std::vector<TSubtitle> const& vAllSubtitles, 
-    std::string const& szFile, std::string const& szTranslation)
+    std::string const& szFile, std::string const& szTranslation, std::string const& szComment)
 {
     for (auto const& subt : vAllSubtitles) {
         auto pos = subt.m_szCmpText.find(szCmpWord);
         while (pos != std::string::npos) {
-            TGlossEntry tGlsTerm; tGlsTerm.szFile = szFile; tGlsTerm.szTranslation = szTranslation;
+            TGlossEntry tGlsTerm; tGlsTerm.szFile = szFile; tGlsTerm.szTranslation = szTranslation; tGlsTerm.szComment = szComment;
             tGlsTerm.szTerm = subt.ExtractOriginal(pos, WORD_COUNT(szCmpWord), szCmpWord);
             vVariaties.push_back(tGlsTerm);
             pos = subt.m_szCmpText.find(szCmpWord, pos + szCmpWord.length());
@@ -52,8 +60,8 @@ void CGlossaryMaster::LookupVariaties(std::vector<TSubtitle>&& vAllSubtitles)
         szCmpNoAl = szCmp;
         REMOVE_LEADING_AL(szCmpNoAl);
         std::future<void> fNoAl = std::async(&CGlossaryMaster::FindVariaties, this, std::ref(vFoundVariatiesNoAl), std::ref(szCmpNoAl), std::ref(vAllSubtitles),
-            std::ref(glsRec.szFile), std::ref(glsRec.szTranslation));
-        FindVariaties(vFoundVariaties, szCmp, vAllSubtitles, glsRec.szFile, glsRec.szTranslation);
+            std::ref(glsRec.szFile), std::ref(glsRec.szTranslation), std::ref(glsRec.szComment));
+        FindVariaties(vFoundVariaties, szCmp, vAllSubtitles, glsRec.szFile, glsRec.szTranslation, glsRec.szComment);
         fNoAl.get();
     }
     Merge(vFoundVariaties);
